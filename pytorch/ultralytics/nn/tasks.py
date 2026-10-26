@@ -55,6 +55,8 @@ from ultralytics.nn.modules import (
     HGBlock,
     HGStem,
     IGSA,
+    LCR,
+    SIM,
     ImagePoolingAttn,
     Index,
     LRPCHead,

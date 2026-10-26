@@ -1,0 +1,17 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ultralytics/
+.runtime/
+**/runs/
+**/outputs/
+**/bin/
+**/*.cache
+*.egg-info/
+.venv/
+*.pt
+!weights/sirdet_antiuav_320.pt
+*.onnx
+*.rknn
+*.zip
+*.tar.gz

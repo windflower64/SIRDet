@@ -96,6 +96,11 @@ class TargetAwareGuide(nn.Module):
         return vis * (1.0 + self.beta * p_ir)
 
 
+# Paper names; aliases preserve historical checkpoint and state-dict compatibility.
+LCR = DualModalRefine
+SIM = TargetAwareGuide
+
+
 class CrossModalGuide(nn.Module):
     """VIS-dominant cross-modal attention guide."""
 

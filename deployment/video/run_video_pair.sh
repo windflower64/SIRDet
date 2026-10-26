@@ -2,13 +2,13 @@
 set -euo pipefail
 
 root="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-dataset_root="${LERDET_VIDEO_DATA_ROOT:-/userdata/datasets/stagdet_raw_videos}"
+dataset_root="${SIRDET_VIDEO_DATA_ROOT:-${LERDET_VIDEO_DATA_ROOT:-/userdata/datasets/sirdet_raw_videos}}"
 sequence="${1:-$(awk -F, 'NR == 2 {gsub(/\r/, "", $1); print $1}' "${dataset_root}/video_pairs.csv")}"
 confidence="${2:-0.25}"
 max_frames="${3:-0}"
 nms_iou="${NMS_IOU:-0.70}"
-model="${LERDET_MODEL:-}"
-[[ -s "${model}" ]] || { echo "Missing RKNN model. Set LERDET_MODEL to the final .rknn file." >&2; exit 1; }
+model="${SIRDET_MODEL:-${LERDET_MODEL:-}}"
+[[ -s "${model}" ]] || { echo "Missing RKNN model. Set SIRDET_MODEL to the .rknn file." >&2; exit 1; }
 
 row="$(awk -F, -v id="${sequence}" 'NR > 1 && $1 == id {gsub(/\r/, ""); print; exit}' "${dataset_root}/video_pairs.csv")"
 [[ -n "${row}" ]] || { echo "Sequence not found: ${sequence}" >&2; exit 1; }

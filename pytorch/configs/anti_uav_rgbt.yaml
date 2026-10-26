@@ -1,12 +1,11 @@
-path: F:/data/Anti_UAV_6K
+# Paired visible/infrared data; override root with --data-root.
+path: /path/to/Anti_UAV_6K
 train: train/visible/images
-val: test/visible/images
+val: val/visible/images
 test: test/visible/images
-
 channels: 4
 use_simotm: RGBT
 pairs_rgb_ir: [visible, infrared]
-
 nc: 1
 names:
   0: uav

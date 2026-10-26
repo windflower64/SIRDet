@@ -96,7 +96,7 @@ from .head import (
     YOLOESegment26,
     v10Detect,
 )
-from .rgbt_guidance import CrossModalGuide, DualModalRefine, IGSA, TargetAwareGuide
+from .rgbt_guidance import CrossModalGuide, DualModalRefine, IGSA, LCR, SIM, TargetAwareGuide
 from .transformer import (
     AIFI,
     MLP,
@@ -158,6 +158,8 @@ __all__ = (
     "DeformableTransformerDecoderLayer",
     "Detect",
     "DualModalRefine",
+    "LCR",
+    "SIM",
     "Focus",
     "GhostBottleneck",
     "GhostConv",

@@ -24,4 +24,4 @@ done
 for script in build_on_board.sh run_image.sh run_benchmark.sh run_perf_probe.sh verify_package.sh; do
     bash -n "${script}"
 done
-echo "Package verification passed. Dataset and model are external; set LERDET_DATA_ROOT and LERDET_MODEL before running."
+echo "Package verification passed. Set SIRDET_DATA_ROOT and SIRDET_MODEL before running."

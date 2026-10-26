@@ -1,6 +1,6 @@
 # RKNN model placement
 
-Place the final RKNN model generated from the 320x192 raw-DFL export in this directory, or pass its absolute path to the command-line programs. The source bundle intentionally omits binary weights.
+Place the matching SIRDet RKNN model generated from the 320x192 raw-DFL export in this directory, or pass its absolute path to the command-line programs. The repository includes a PyTorch checkpoint under the root weights directory, but no RKNN binary is bundled here.
 
 Expected contract for the formal deployment result:
 

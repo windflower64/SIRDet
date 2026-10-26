@@ -2,11 +2,11 @@
 set -euo pipefail
 
 root="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-data_root="${LERDET_DATA_ROOT:-${root}/test_data}"
+data_root="${SIRDET_DATA_ROOT:-${LERDET_DATA_ROOT:-${root}/test_data}}"
 manifest="${data_root}/manifest.csv"
-model="${LERDET_MODEL:-}"
+model="${SIRDET_MODEL:-${LERDET_MODEL:-}}"
 [[ -s "${manifest}" ]] || { echo "Missing dataset manifest: ${manifest}" >&2; exit 1; }
-[[ -s "${model}" ]] || { echo "Missing RKNN model. Set LERDET_MODEL to the final .rknn file." >&2; exit 1; }
+[[ -s "${model}" ]] || { echo "Missing RKNN model. Set SIRDET_MODEL to the .rknn file." >&2; exit 1; }
 name="${1:-$(awk -F, 'NR == 2 {print $1}' "${manifest}")}"
 warmup="${2:-10}"
 runs="${3:-100}"

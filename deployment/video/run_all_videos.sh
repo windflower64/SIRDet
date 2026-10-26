@@ -2,7 +2,7 @@
 set -euo pipefail
 
 root="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-dataset_root="${LERDET_VIDEO_DATA_ROOT:-/userdata/datasets/stagdet_raw_videos}"
+dataset_root="${SIRDET_VIDEO_DATA_ROOT:-${LERDET_VIDEO_DATA_ROOT:-/userdata/datasets/sirdet_raw_videos}}"
 confidence="${1:-0.25}"
 max_frames="${2:-0}"
 max_sequences="${3:-0}"
@@ -12,7 +12,7 @@ while IFS=, read -r sequence_id visible_rel infrared_rel visible_json infrared_j
     [[ "${sequence_id}" == "sequence_id" || -z "${sequence_id}" ]] && continue
     sequence_id="${sequence_id//$'\r'/}"
     echo "Running ${sequence_id}"
-    LERDET_VIDEO_DATA_ROOT="${dataset_root}" "${root}/run_video_pair.sh" "${sequence_id}" "${confidence}" "${max_frames}"
+    SIRDET_VIDEO_DATA_ROOT="${dataset_root}" "${root}/run_video_pair.sh" "${sequence_id}" "${confidence}" "${max_frames}"
     count=$((count + 1))
     if [[ "${max_sequences}" -gt 0 && "${count}" -ge "${max_sequences}" ]]; then
         break

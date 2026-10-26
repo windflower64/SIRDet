@@ -16,4 +16,4 @@ $forbidden = Get-ChildItem -LiteralPath $bundle -Recurse -File | Where-Object {
     $_.FullName -match "paper_figure|paper_table|figure_|debug\.json|\.docx$|\.pdf$|complete_metrics|results\.csv"
 }
 if ($forbidden) { throw "Forbidden paper/analysis artifact found: $($forbidden[0].FullName)" }
-Write-Output "LERDet source bundle verification passed."
+Write-Output "SIRDet source bundle verification passed."

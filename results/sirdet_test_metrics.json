@@ -1,0 +1,40 @@
+{
+  "model": "SIRDet",
+  "checkpoint_sha256": "10e743adeab01cdadd4e539a5e05adf0e7bd37df3f619c810c7a56a347345c62",
+  "ultralytics_version": "8.4.56",
+  "torch_version": "2.3.1+cu118",
+  "P": 0.9621266047174312,
+  "R": 0.8863523788268182,
+  "F1": 0.9226863950476187,
+  "mAP50": 0.9254592026523067,
+  "mAP50_95": 0.5191065541604154,
+  "parameters": 4314732,
+  "Params_M": 4.314732,
+  "parameters_checkpoint": 4325460,
+  "parameters_definition": "after standard inference Conv/BN fusion, matching paper profiling",
+  "images": 1820,
+  "ground_truth_boxes": 1691,
+  "speed_ms": {
+    "preprocess": 0.12451159357794325,
+    "inference": 1.6595340110962842,
+    "postprocess": 1.0653981869556728
+  },
+  "FPS_total": 350.9456838339645,
+  "FPS_inference": 602.5787921872131,
+  "fps_definition": "1000 / (preprocess_ms + inference_ms + postprocess_ms)",
+  "evaluation": {
+    "split": "test",
+    "imgsz": 320,
+    "batch": 16,
+    "conf": 0.001,
+    "iou": 0.7,
+    "max_det": 300,
+    "rect": true,
+    "half": false,
+    "augment": false,
+    "channels": 4,
+    "workers": 0,
+    "device": "0"
+  },
+  "GFLOPs": 4.060228352
+}

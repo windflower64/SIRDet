@@ -1,55 +1,87 @@
-# LERDet source bundle
+# SIRDet
 
-This directory contains only the source needed to reproduce the final LERDet model and its RK3566 edge implementation. 
-## Contents
+**SIRDet: Lightweight RGB Thermal UAV Detection with Infrared Guidance**
 
-- `pytorch/`: the retained Ultralytics training/validation core, the final RGB-T model configuration, DMR/TAG modules, WIoU loss support, and small command-line wrappers.
-- `deployment/board/`: single-pair image inference, device benchmark, and RKNN performance-probe programs using the final raw-DFL detector.
-- `deployment/video/`: original paired RGB-IR video end-to-end processing using the same detector implementation and OpenCV software decoding.
-- `scripts/`: reproducibility checks and file-manifest utilities.
+Official implementation and trained checkpoint for **SIRDet: Lightweight RGB Thermal UAV Detection with Infrared Guidance**, including paired RGB-thermal evaluation and RK3566 deployment source.
 
-The source bundle does not include trained `.pt` or `.rknn` weights.  The board runtime header is included for compilation; the runtime library `librknnrt.so` must be installed on the RK3566 device.
+## Model and terminology
 
-## PyTorch path
+SIRDet retains visible-image coordinates as the detection reference. **Local Context Recalibration (LCR)** performs local encoding and channel recalibration independently in each modality. **Scale-wise Infrared Modulation (SIM)** spatially averages each scale's learned infrared response into a sample-dependent scalar gain and modulates the corresponding visible feature. Predictions use P2-P5 and the project WIoU regression implementation.
 
-```powershell
+## Released checkpoint
+
+| File | Parameters | Checkpoint evaluation |
+|---|---:|---|
+| [`weights/sirdet_antiuav_320.pt`](weights/sirdet_antiuav_320.pt) | 4,314,732 | P 0.9621, R 0.8864, F1 0.9227, mAP50 0.9255, mAP50-95 0.5191 |
+
+SHA-256: `10e743adeab01cdadd4e539a5e05adf0e7bd37df3f619c810c7a56a347345c62`. Only load PyTorch checkpoints from trusted sources. See [reproduction notes](docs/REPRODUCIBILITY.md) for implementation details and evaluation settings.
+
+## Setup
+
+Enter `pytorch/`. Use Python 3.10-3.12 and install a matching CUDA torch/torchvision pair appropriate for your GPU. Reference environment: Python 3.12.3, torch 2.3.1+cu118, torchvision 0.18.1+cu118, Ultralytics 8.4.56. Keep a working server CUDA stack rather than blindly replacing it.
+
+```bash
 cd pytorch
 python -m pip install -r requirements.txt
-set YOLO_CONFIG_DIR=%CD%/.ultralytics
-python train_lerdet.py
-python validate_lerdet.py path/to/best.pt --data /path/to/anti_uav6k-rgbt.yaml
-python export_lerdet.py path/to/best.pt --imgsz 192 320
+python -c "import ultralytics; print(ultralytics.__file__)"
 ```
 
-Replace dataset and checkpoint paths with local paths. The training wrapper records the final paper settings: 320-pixel training input, SGD, 100 epochs, batch size 16, seed 0, deterministic execution, and the project dynamic IoU-quality modulation option.
+The imported path must be this repository's `pytorch/ultralytics/`. Do not install/upgrade a stock Ultralytics package over these modules. Weights are stored directly in Git; Git LFS is not required.
 
-## RK3566 path
+## Dataset
 
-On the board, install OpenCV 4.x development files, GCC/G++ with C++17 support, RKNN Runtime 2.3.2-compatible headers/library, and copy the final `.rknn` model to the path expected by the run script.
+Obtain original Anti-UAV data under its access terms. Images/annotations are not redistributed here. The evaluation collection contains 1,820 pairs and 1,691 visible ground-truth boxes. Exact membership, not merely matching counts, is needed for exact reproduction.
+
+```text
+Anti_UAV_6K/
+  train/visible/{images,labels}/
+  train/infrared/{images,labels}/
+  val/visible/{images,labels}/
+  val/infrared/{images,labels}/
+  test/visible/{images,labels}/
+  test/infrared/{images,labels}/
+```
+
+Paired image filenames/extensions must match. Visible labels use normalized YOLO center-x, center-y, width, height. Evaluation uses visible labels. The loader reads BGR + grayscale IR, resizes IR to the visible grid, then applies shared transforms.
+
+## Evaluate
+
+From `pytorch/`, substitute your dataset root:
 
 ```bash
-cd deployment/board
-chmod +x *.sh
-./verify_package.sh
-./build_on_board.sh
-./run_image.sh
-./run_benchmark.sh
-./run_perf_probe.sh
+python evaluate_sirdet.py --data-root /path/to/Anti_UAV_6K --device 0
 ```
 
-For original paired videos:
+Defaults: test split, size 320, batch 16, FP32, confidence 0.001, NMS IoU 0.7, max_det 300, rectangular batches, no augmentation, workers 0. Results, checkpoint hash, settings, speed and FLOPs are saved to a new `runs/evaluate/sirdet_test*/metrics.json`. FPS depends on hardware and system load.
+
+The evaluator checks test membership and visible-label byte hashes against [`data/test_pairs.csv`](data/test_pairs.csv). For an intentionally different dataset, add `--allow-different-test-set` and do not describe that run as exact test-set reproduction. No source image pixels are included in the manifest.
+
+Full-precision evaluation results are available in [`results/sirdet_test_metrics.json`](results/sirdet_test_metrics.json).
+
+## Training and export
 
 ```bash
-cd deployment/video
-chmod +x *.sh
-./build_on_board.sh
-LERDET_VIDEO_DATA_ROOT=/userdata/datasets/stagdet_raw_videos \
-LERDET_MODEL=/userdata/models/lerdet_320x192_raw_dfl.rknn \
-./run_video_pair.sh
+python train_sirdet.py --data-root /path/to/Anti_UAV_6K --device 0
+python export_sirdet.py --imgsz 192 320
 ```
 
-The video program uses the final `320x192` raw-DFL RKNN contract and performs CPU-side sparse score filtering, DFL decoding, and NMS. It does not draw boxes or encode result videos.
+Training uses the paper architecture and a user-supplied train/val split, starting from random initialization. It is not required for checkpoint evaluation and is not a promise to regenerate the same checkpoint or accuracy. The ONNX export is a decoded detector graph, NOT the raw-DFL graph expected by the RKNN programs. Install ONNX dependencies separately when exporting.
 
-## Reproducibility boundary
+The supplied configuration uses the project's `use_wiseiou=True` implementation. See the reproduction notes for the regression-loss settings.
 
-The model name in the source configuration remains the historical `yolo11-RGBT-*` filename used by the training code; the paper-level method name is LERDet. The deployment source accepts one or two inputs and two or eight outputs so that the final merged raw-DFL model and the compatible per-scale diagnostic model can be inspected, while the documented deployment path uses the merged two-output model.
+## RK3566 source
+
+`deployment/board/` contains paired-image inference and timing programs. `deployment/video/` contains paired-video processing. Both target the documented NHWC `1x192x320x4` B,G,R,IR INT8 raw-DFL interface with CPU DFL decoding and NMS, RK3566, RKNN Runtime 2.3.2 and OpenCV 4.x development files.
+
+The supplied checkpoint is for PyTorch. RK3566 execution requires a separately converted RKNN graph with matching preprocessing and runtime settings. See the [board setup](deployment/board/README.md) for build and inference commands.
+
+## Checks and license
+
+```bash
+cd ..
+python scripts/verify_manifest.py
+cd pytorch
+python -m pytest tests -q
+```
+
+The modified Ultralytics runtime remains subject to [AGPL-3.0](LICENSE). Preserve upstream notices when using or redistributing the implementation.

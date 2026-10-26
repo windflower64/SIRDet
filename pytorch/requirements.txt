@@ -1,8 +1,14 @@
-torch>=2.3,<2.5
-torchvision>=0.18,<0.20
-numpy>=1.26,<3
-opencv-python>=4.6
-PyYAML>=6.0
-matplotlib>=3.8
-seaborn>=0.13
-psutil>=5.9
+# Install a CUDA-compatible torch/torchvision pair separately.
+# Validated: torch 2.3.1+cu118 / torchvision 0.18.1+cu118, Python 3.12.3.
+numpy>=1.26,<2
+opencv-python>=4.7,<4.12
+PyYAML>=6.0,<7
+matplotlib>=3.8,<3.11
+seaborn>=0.13,<0.14
+psutil>=5.9,<8
+requests>=2.28,<3
+scipy>=1.10,<1.17
+pillow>=10,<13
+polars>=0.20,<2
+ultralytics-thop>=2.0.18,<3
+pytest>=8,<10
