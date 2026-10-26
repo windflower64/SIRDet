@@ -1,6 +1,6 @@
 {
   "package": "SIRDet checkpoint-evaluation source bundle",
-  "generated_utc": "2026-10-26T11:59:46.529842+00:00",
+  "generated_utc": "2026-10-26T12:02:06.671406+00:00",
   "text_normalization": "LF for source/documentation text; binaries unchanged",
   "file_count": 192,
   "files": [
@@ -141,8 +141,8 @@
     },
     {
       "path": "docs/REPRODUCIBILITY.md",
-      "bytes": 3321,
-      "sha256": "78c2befa7099eb6dfb14cae337e712b4286641e88990d83804fd17d346ed9a99"
+      "bytes": 3320,
+      "sha256": "4b7191cbc0148fa82e3d6ede4b5b4a9c466b23a10109ff85ef650d442c6452c1"
     },
     {
       "path": "pytorch/configs/anti_uav_rgbt.yaml",

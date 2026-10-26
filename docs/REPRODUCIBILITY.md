@@ -32,4 +32,3 @@ Loss gains for box, classification and DFL default to 7.5, 0.5, 1.5. The project
 Report the checkpoint hash, split membership, evaluator version and evaluation settings alongside measured results. Full-precision results are included under `results/`.
 
 Local repository verification on the reference test collection completed successfully: P 0.9621266047, R 0.8863523788, F1 0.9226863950, mAP50 0.9254592027 and mAP50-95 0.5191065542, 4.060228352 GFLOPs. The supplied config with paper aliases loads the checkpoint state dict strictly and produces bit-identical predictions to the original named model on the compatibility-test input. Six automated tests cover aliases, checkpoint hash, strict loading, scalar modulation, training gradients, and dataset-label integrity.
-
